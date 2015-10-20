@@ -82,4 +82,34 @@ extern "C"
 #endif
 void scaleDouble(double s, double *a, size_t size);
 
+#ifdef __cplusplus
+extern "C"
+#endif
+void logFloat(float *a, size_t size);
+
+#ifdef __cplusplus
+extern "C"
+#endif
+void logDouble(double *a, size_t size);
+
+#ifdef __cplusplus
+extern "C"
+#endif
+void inv(float *a, size_t size);
+
+#ifdef __cplusplus
+extern "C"
+#endif
+void invDouble(double *a, size_t size);
+
+#ifdef __cplusplus
+extern "C"
+#endif
+void texp(float *a, size_t size);
+
+#ifdef __cplusplus
+extern "C"
+#endif
+void texpDouble(double *a, size_t size);
+
 #endif
