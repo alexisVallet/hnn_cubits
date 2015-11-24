@@ -578,3 +578,26 @@ void tpowDouble(double *a1, double *a2, size_t size) {
   powDouble_kernel<<<(size + BLOCK_SIZE - 1) / BLOCK_SIZE, BLOCK_SIZE>>>(a1,a2,size);
 }
 
+__global__ void max_kernel(float *a1, float *a2, size_t size) {
+  int i = blockIdx.x * blockDim.x + threadIdx.x;
+
+  if (i < size)
+    a2[i] = max(a1[i], a2[i]);
+}
+
+__global__ void maxDouble_kernel(double *a1, double *a2, size_t size) {
+  int i = blockIdx.x * blockDim.x + threadIdx.x;
+
+  if (i < size)
+    a2[i] = max(a1[i], a2[i]);  
+}
+
+extern "C"
+void tmax(float *a1, float *a2, size_t size) {
+  max_kernel<<<(size + BLOCK_SIZE - 1) / BLOCK_SIZE, BLOCK_SIZE>>>(a1,a2,size);
+}
+
+extern "C"
+void tmaxDouble(double *a1, double *a2, size_t size) {
+  maxDouble_kernel<<<(size + BLOCK_SIZE - 1) / BLOCK_SIZE, BLOCK_SIZE>>>(a1,a2,size);
+}

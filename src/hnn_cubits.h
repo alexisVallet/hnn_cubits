@@ -252,4 +252,14 @@ extern "C"
 #endif
 void tpowDouble(double *a1, double *a2, size_t size);
 
+#ifdef __cplusplus
+extern "C"
+#endif
+void tmax(float *a1, float *a2, size_t size);
+
+#ifdef __cplusplus
+extern "C"
+#endif
+void tmaxDouble(double *a1, double *a2, size_t size);
+
 #endif
