@@ -601,3 +601,93 @@ extern "C"
 void tmaxDouble(double *a1, double *a2, size_t size) {
   maxDouble_kernel<<<(size + BLOCK_SIZE - 1) / BLOCK_SIZE, BLOCK_SIZE>>>(a1,a2,size);
 }
+
+__global__ void broadcast_copy_kernel(int nbdim, size_t size, float *inp, int *inp_shape, float *out, int *out_shape) {
+  // i is the index in the output, assumed to be in row-major order.
+  int out_idx = blockIdx.x * blockDim.x + threadIdx.x;
+  int acc = out_idx;
+  int *out_indices;
+  int inp_idx;
+
+  if (out_idx < size) {
+    out_indices = new int[nbdim];
+    
+    for (int i = nbdim-1; i >= 0; i--) {
+      out_indices[i] = acc % inp_shape[i];
+      acc = acc / out_shape[i];
+    }
+    inp_idx = out_indices[0];
+    for (int i = 1; i < nbdim; i++) {
+      inp_idx = out_indices[i] + inp_shape[i] * inp_idx;
+    }
+    delete out_indices;
+    out[out_idx] = inp[inp_idx];
+  }
+}
+
+__global__ void broadcast_copyDouble_kernel(int nbdim, size_t size, double *inp, int *inp_shape, double *out, int *out_shape) {
+  // i is the index in the output, assumed to be in row-major order.
+  int out_idx = blockIdx.x * blockDim.x + threadIdx.x;
+  int acc = out_idx;
+  int *out_indices;
+  int inp_idx;
+
+  if (out_idx < size) {
+    out_indices = new int[nbdim];
+    
+    for (int i = nbdim-1; i >= 0; i--) {
+      out_indices[i] = acc % inp_shape[i];
+      acc = acc / out_shape[i];
+    }
+    inp_idx = out_indices[0];
+    for (int i = 1; i < nbdim; i++) {
+      inp_idx = out_indices[i] + inp_shape[i] * inp_idx;
+    }
+    delete out_indices;
+    out[out_idx] = inp[inp_idx];
+  }
+}
+
+__global__ void broadcast_backward_kernel(int nbdim, size_t inp_size, double *inp, int *inp_shape, double *out, int *out_shape) {
+  // i is the index in the input, assumed to be in row-major order.
+  int inp_idx = blockIdx.x * blockDim.x + threadIdx.x;
+  int acc = inp_idx;
+  int *inp_indices;
+  int out_idx;
+  
+
+  if (inp_idx < inp_size) {
+    inp_indices = new int[nbdim];
+
+    for (int i = nbdim-1; i >= 0; i--) {
+      inp_indices[i]  = acc % inp_shape[i];
+      acc = acc / inp_shape[i];
+    }
+
+    for (int i = 0; i < nbdim; i++) {
+      
+    }
+
+    delete inp_indices;
+  }
+}
+
+extern "C"
+void broadcast_copy(int nbdim, size_t size, float *inp, int *inp_shape, float *out, int *out_shape) {
+  broadcast_copy_kernel<<<(size + BLOCK_SIZE - 1) / BLOCK_SIZE, BLOCK_SIZE>>>(nbdim, size, inp, inp_shape, out, out_shape);
+}
+
+extern "C"
+void broadcast_copyDouble(int nbdim, size_t size, double *inp, int *inp_shape, double * out, int *out_shape) {
+  broadcast_copyDouble_kernel<<<(size + BLOCK_SIZE - 1) / BLOCK_SIZE, BLOCK_SIZE>>>(nbdim, size, inp, inp_shape, out, out_shape);
+}
+
+extern "C"
+void freeDevicePtr(void *ptr) {
+  cudaFree(ptr);
+}
+
+extern "C"
+void freeCuRANDGenerator(curandGenerator_t gen) {
+  curandDestroyGenerator(gen);
+}

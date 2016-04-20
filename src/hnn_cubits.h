@@ -2,6 +2,8 @@
 #ifndef __HNN_CUBITS_H__
 #define __HNN_CUBITS_H__
 
+#include <curand.h>
+
 #ifdef __cplusplus
 extern "C"
 #endif
@@ -261,5 +263,20 @@ void tmax(float *a1, float *a2, size_t size);
 extern "C"
 #endif
 void tmaxDouble(double *a1, double *a2, size_t size);
+
+#ifdef __cplusplus
+extern "C"
+#endif
+void broadcast_copy(int nbdim, size_t size, float *inp, int *inp_shape, float *out, int *out_shape);
+
+#ifdef __cplusplus
+extern "C"
+#endif
+void broadcast_copyDouble(int nbdim, size_t size, double *inp, int *inp_shape, double * out, int *out_shape);
+
+#ifdef __cplusplus
+extern "C"
+#endif
+void freeCuRANDGenerator(curandGenerator_t gen);
 
 #endif
